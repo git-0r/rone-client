@@ -18,7 +18,6 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 import { useState } from "react";
 import { useUser } from "@auth0/nextjs-auth0/client";
-import { satoshi, telma } from "@/app/styles/fonts";
 
 const items = [
   {
@@ -34,22 +33,12 @@ export default function Navigation() {
   const { user, isLoading } = useUser();
 
   return (
-    <header
-      className={
-        "sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 " +
-        satoshi.className
-      }
-    >
+    <header className="sticky top-0 z-50 w-full border-b border-b-likeBlue/10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-14 items-center">
         <div className="hidden md:flex md:items-center md:justify-between md:w-full">
           <Link href="/" className="mr-6 flex items-center space-x-2">
-            <span
-              className={
-                "ml-4 hidden font-bold sm:inline-block text-3xl text-likeBlue " +
-                telma.className
-              }
-            >
-              r1
+            <span className="ml-4 hidden font-bold sm:inline-block text-3xl text-likeBlue">
+              r.one
             </span>
           </Link>
           <NavigationMenu>
@@ -60,7 +49,8 @@ export default function Navigation() {
                     href={item.href}
                     className={cn(
                       navigationMenuTriggerStyle(),
-                      pathname === item.href && "text-primary"
+                      pathname === item.href && "text-primary",
+                      "font-bold"
                     )}
                   >
                     {item.title}
@@ -74,7 +64,8 @@ export default function Navigation() {
                       href="/account"
                       className={cn(
                         navigationMenuTriggerStyle(),
-                        pathname === "/account" && "text-primary"
+                        pathname === "/account" && "text-primary",
+                        "font-bold"
                       )}
                     >
                       Account

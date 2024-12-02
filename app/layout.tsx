@@ -1,7 +1,9 @@
+"use client";
+
 import Navigation from "@/components/navigation";
 import "./globals.css";
 import { UserProvider } from "@auth0/nextjs-auth0/client";
-import { geistMono, geistSans } from "./styles/fonts";
+import { satoshi } from "./styles/fonts";
 import { Toaster } from "@/components/ui/toaster";
 
 export default function RootLayout({
@@ -13,7 +15,7 @@ export default function RootLayout({
     <html lang="en">
       <UserProvider>
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased mx-2 h-screen`}
+          className={`${satoshi.className} font-bold antialiased mx-2 h-screen`}
         >
           <Navigation />
           {children}
