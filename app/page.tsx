@@ -2,6 +2,7 @@ import { Mic, FileText, Zap, Shield, Ellipsis } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import DemoVideo from "@/components/Video";
 import Link from "next/link";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export default function LandingPage() {
   return (
@@ -69,6 +70,7 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+      {process.env.NODE_ENV === "production" && <SpeedInsights />}
     </div>
   );
 }
