@@ -77,7 +77,8 @@ export default function Navigation() {
                       href="/api/auth/login"
                       className={cn(
                         navigationMenuTriggerStyle(),
-                        pathname === "/api/auth/login" && "text-primary"
+                        pathname === "/api/auth/login" && "text-primary",
+                        "font-bold"
                       )}
                     >
                       Login

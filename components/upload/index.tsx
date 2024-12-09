@@ -19,6 +19,8 @@ type Props = {
   onUploadSuccess?: (result: Result) => void;
 };
 
+const fileSizeLimit = 5 * 1024 * 1024; // 5MB limit
+
 export default function Upload({ user, token, onUploadSuccess }: Props) {
   const [dragActive, setDragActive] = useState(false);
   const [file, setFile] = useState<File | null>(null);
@@ -65,6 +67,11 @@ export default function Upload({ user, token, onUploadSuccess }: Props) {
 
     if (!file) {
       alert("Please select a file first.");
+      return;
+    }
+
+    if (file.size > fileSizeLimit) {
+      alert("File size exceeds the 5MB limit.");
       return;
     }
 
@@ -122,7 +129,7 @@ export default function Upload({ user, token, onUploadSuccess }: Props) {
             <input
               type="file"
               ref={inputRef}
-              accept="audio/*"
+              accept="audio/wav"
               onChange={handleChange}
               className="hidden"
             />
@@ -137,7 +144,7 @@ export default function Upload({ user, token, onUploadSuccess }: Props) {
               <p className="text-sm text-gray-600">
                 {file
                   ? `Selected: ${file.name}`
-                  : "Drag and drop an audio file or click to select"}
+                  : "Drag and drop an audio file or click to select. Maximum file size: 5MB."}
               </p>
               <Button
                 type="button"
