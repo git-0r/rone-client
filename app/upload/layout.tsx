@@ -1,4 +1,5 @@
-// import { UserProvider } from "@auth0/nextjs-auth0/client";
+"use client";
+
 import { HistoryProvider } from "@/components/historyContext";
 
 export default function UploadLayout({
@@ -6,9 +7,5 @@ export default function UploadLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    // <UserProvider>
-    <HistoryProvider>{children}</HistoryProvider>
-    // </UserProvider>
-  );
+  return <HistoryProvider>{children}</HistoryProvider>;
 }
