@@ -1,10 +1,12 @@
 "use client";
 
 import React, { useState, useRef } from "react";
-import { FileUp, Download } from "lucide-react";
+import { FileUp, Download, Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Claims } from "@auth0/nextjs-auth0";
 import History from "../history";
+import { useHistory } from "../historyContext";
+import { toast } from "sonner";
 
 type Result = {
   id: string;
@@ -21,10 +23,12 @@ type Props = {
 
 const fileSizeLimit = 5 * 1024 * 1024; // 5MB limit
 
-export default function Upload({ user, token, onUploadSuccess }: Props) {
+export default function Upload({ user, token }: Props) {
   const [dragActive, setDragActive] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const { addHistory } = useHistory();
 
   const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -59,27 +63,27 @@ export default function Upload({ user, token, onUploadSuccess }: Props) {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
+    setIsUploading(true);
+
     e.preventDefault();
-    if (!user || !token) {
-      alert("Not authorized.");
-      return;
-    }
-
-    if (!file) {
-      alert("Please select a file first.");
-      return;
-    }
-
-    if (file.size > fileSizeLimit) {
-      alert("File size exceeds the 5MB limit.");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("email", `${user.email}`);
-    formData.append("audio", file);
 
     try {
+      if (!user || !token) {
+        throw new Error("Not authorized.");
+      }
+
+      if (!file) {
+        throw new Error("Please select a file first.");
+      }
+
+      if (file.size > fileSizeLimit) {
+        throw new Error("File size exceeds the 5MB limit.");
+      }
+
+      const formData = new FormData();
+      formData.append("email", `${user.email}`);
+      formData.append("audio", file);
+
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/upload`,
         {
@@ -93,14 +97,20 @@ export default function Upload({ user, token, onUploadSuccess }: Props) {
 
       if (response.ok) {
         const result = await response.json();
-        onUploadSuccess?.(result);
+        addHistory(result.data);
         setFile(null);
+        toast.success(result.message);
       } else {
-        alert("Failed to upload file.");
+        throw new Error("Failed to upload file.");
       }
     } catch (error) {
-      console.error("Error uploading file:", error);
-      alert("An error occurred while uploading the file.");
+      if (error instanceof Error) {
+        toast.error(error?.message);
+      } else {
+        toast.error("An error occurred while uploading the file.");
+      }
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -121,8 +131,8 @@ export default function Upload({ user, token, onUploadSuccess }: Props) {
               relative border-2 border-dashed rounded-lg p-8 text-center transition-all duration-300
               ${
                 dragActive
-                  ? "border-[#3A41FD] bg-[#3A41FD]/10"
-                  : "border-gray-300 hover:border-[#3A41FD]"
+                  ? "border-likeBlue bg-likeBlue/10"
+                  : "border-gray-300 hover:border-likeBlue"
               }
             `}
           >
@@ -138,7 +148,7 @@ export default function Upload({ user, token, onUploadSuccess }: Props) {
                 size={48}
                 className={`
                   text-gray-400 transition-colors duration-300
-                  ${dragActive ? "text-[#3A41FD]" : "text-gray-400"}
+                  ${dragActive ? "text-likeBlue" : "text-gray-400"}
                 `}
               />
               <p className="text-sm text-gray-600">
@@ -150,7 +160,7 @@ export default function Upload({ user, token, onUploadSuccess }: Props) {
                 type="button"
                 onClick={openFileSelector}
                 variant="outline"
-                className="border-[#3A41FD] text-[#3A41FD] hover:bg-[#3A41FD]/10"
+                className="border-likeBlue text-likeBlue hover:bg-likeBlue/10"
               >
                 <Download className="mr-2" size={16} /> Select File
               </Button>
@@ -160,15 +170,19 @@ export default function Upload({ user, token, onUploadSuccess }: Props) {
           <div className="flex justify-center">
             <Button
               type="submit"
-              className="bg-[#3A41FD] hover:bg-[#3A41FD]/90"
-              disabled={!file}
+              className="bg-likeBlue hover:bg-likeBlue/90 min-w-36"
+              disabled={!file || isUploading}
             >
-              Upload Audio
+              {isUploading ? (
+                <Loader className="animate-spin" />
+              ) : (
+                "Upload Audio"
+              )}
             </Button>
           </div>
         </form>
       </div>
-      <History token={token} />
+      <History />
     </div>
   );
 }

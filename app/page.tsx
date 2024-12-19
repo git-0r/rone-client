@@ -33,7 +33,7 @@ export default function LandingPage() {
             <Link href="/upload">Start Transcribing</Link>
           </Button>
         </div>
-        <div className="relative rounded-xl overflow-hidden size-full shadow-lg border">
+        <div className="relative rounded-xl overflow-hidden shadow-lg border">
           <DemoVideo />
         </div>
       </main>
